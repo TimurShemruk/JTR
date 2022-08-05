@@ -1,0 +1,126 @@
+{% load static %}
+{% load JTR_tags %}
+
+<html>
+<head>
+    <title>{{title}}</title>
+    <link type="text/css" href="{% static 'JTR/css/styles.css' %}" rel="stylesheet" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <link rel="shortcut icon" href="{% static 'JTR/images/logo_nofon.ico' %}" type="image/x-icon"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<table class="table-page" border=0 cellpadding="0" cellspacing="0">
+<tr><td valign=top>
+{% block mainmenu %}
+        <div class="header">
+            <ul id="mainmenu" class="mainmenu">
+    <div>
+                <li class="logo"><a href="{% url 'home'%}" ><li class="logo"><img src={% static 'JTR/images/logo_new2.png' %}
+            </li>
+    </div>
+                </a>
+{% for m in menu %}
+            <li><a href="{% url m.url_name %}">{{m.title}}</a></li>
+{% endfor %}
+    <div>
+        <li>
+        <a href="https://www.instagram.com/jtr.team" target="_blank"><img src={% static 'JTR/images/inst.png' %} class="marginLeft pull_right"></a>
+        <a href="https://www.linkedin.com/in/timur-shemruk/" target="_blank"><img src={% static 'JTR/images/link.png' %} class="marginLeft pull_right"></a>
+        <a href="https://vk.com/timur_keln" target="_blank"><img src={% static 'JTR/images/vk.png' %} class="marginLeft pull_right" ></a>
+        <a href="https://youtube.com" target="_blank"><img src={% static 'JTR/images/yout.png' %} class="marginLeft pull_right" ></a>
+        </li>
+    </div>
+    <div>
+        <li>
+        <a href="english/index.php" target="_blank"><img src={% static 'JTR/images/eng.png' %}  class="marginLeft pull_right"></a>
+        <a href="russian/index.php" target="_blank"><img src={% static 'JTR/images/rus.png' %}  class="marginLeft pull_right"></a>
+        </li>
+</div>
+
+            {% if request.user.is_authenticated %}
+            <li class="last"> {{ user.username }} | <a href="{% url 'logout' %}">Выйти</a></li>
+            {% else %}
+            <li class="last"><a href="{% url 'register' %}">Регистрация</a> | <a href="{% url 'login' %}">Войти</a></li>
+            {% endif %}
+            </ul>
+            <div class="clear"></div>
+        </div>
+{% endblock mainmenu %}
+
+
+<table class="table-content" border=0 cellpadding="0" cellspacing="0">
+<tr>
+<!-- Sidebar слева -->
+   <td valign="top" class="left-chapters">
+   <ul id="leftchapters">
+{% if cat_selected == 0 %}
+       <li class="selected">Все категории</li>
+{% else %}
+       <li><a href="{% url 'home' %}">Все категории</a></li>
+{% endif %}
+
+{% for c in cats %}
+{% if c.jtr__count > 0 %}
+   {% if c.pk == cat_selected %}
+       <li class="selected">{{c.name}}</li>
+   {% else %}
+       <li><a href="{{ c.get_absolute_url }}">{{c.name}}</a> </li>
+   {% endif %}
+{% endif %}
+{% endfor %}
+       <li class="share">
+       </li>
+   </ul>
+</td>
+<!-- Конец Sidebar'а -->
+<td valign="top" class="content">
+    <!-- Хлебные крошки -->
+    {% block breadcrumbs %}
+    {% endblock %}
+<!-- Блок контента -->
+    <div class="content-text">
+{% block content %}
+{% endblock %}
+{% if page_obj.has_other_pages %}
+<nav class="list-pages">
+    <ul>
+{% if page_obj.has_previous %}
+<li class="page-num">
+    <a href="?page={{ page_obj.previous_page_number }}">&lt;</a>
+</li>
+{% endif %}
+
+        {%  for p in paginator.page_range %}
+        {% if page_obj.number == p %}
+        <li class="page-num page-num-selected">{{ p }}</li>
+        {% elif p >= page_obj.number|add:-2 and p <= page_obj.number|add:2 %}
+        <li class="page-num">
+            <a href="?page={{ p }}">{{ p }}</a>
+        </li>
+        {% endif %}
+        {% endfor %}
+
+{% if page_obj.has_next %}
+<li class="page-num">
+    <a href="?page={{ page_obj.next_page_number }}">&gt;</a>
+</li>
+{% endif %}
+
+    </ul>
+</nav>
+{% endif %}
+    </div>
+<!-- Конец блока контента -->
+
+</td></tr></table>
+</td></tr>
+<!-- Footer -->
+<tr><td valign=top>
+    <div id="footer">
+        <p>&copy; 2022 JTRteam</p>
+    </div>
+</td></tr></table>
+<!-- Конец footer'а и страницы -->
+</body>
+</html>
